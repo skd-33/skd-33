@@ -79,7 +79,6 @@ w("stack", svg(800, 130, "".join(
 w("footer", svg(800, 50, f'<text x="10" y="30" fill="#2ecc40" {F} font-size="14">$ Connection closed.</text>'))
 
 # contribution city
-# contribution city
 import random, datetime
 random.seed(7)
 def mix(a, b, t):
@@ -102,9 +101,31 @@ bd = datetime.datetime.strptime(best[0], "%Y-%m-%d").strftime("%b %d") if best[0
 def poly(pts, fill):
     return '<polygon points="%s" fill="%s"/>' % (" ".join("%s,%s" % p for p in pts), fill)
 
+# road ring geometry
+mxc, myc = ox, oy + 90
+corners = [(ox, oy - 15), (ox + 210, oy + 90), (ox, oy + 195), (ox - 210, oy + 90)]
+def ring(k): return [(mxc + (x - mxc) * (1 - k), myc + (y - myc) * (1 - k)) for x, y in corners]
+def path(pts): return "M" + " L".join("%.1f,%.1f" % p for p in pts) + " Z"
+road = path(ring(0))
+
+# sky
 out = "".join(f'<circle cx="{random.randint(0,800)}" cy="{random.randint(0,200)}" r="{random.choice([.6,.9,1.2])}" fill="#fff4e8" opacity="{random.choice([.3,.5,.8])}"/>' for _ in range(70))
 out += f'<circle cx="90" cy="70" r="18" fill="#fff4e8"/><circle cx="99" cy="64" r="16" fill="{BG}"/>'
-out += poly([(ox, oy - b - 6), (ox + N * a + 12, oy + (N - 1) * b), (ox, oy + (2 * N - 1) * b + 6), (ox - N * a - 12, oy + (N - 1) * b)], "#241a2a")
+
+# road + streetlights
+out += (f'<path d="{road}" fill="#241a2a" stroke="#15101a" stroke-width="10" stroke-linejoin="round"/>'
+        f'<path d="{road}" fill="none" stroke="#ffd479" stroke-width="1" stroke-dasharray="5 7" opacity=".45"/>'
+        f'<path d="{path(ring(-0.03))}" fill="none" stroke="{LINE}" stroke-width="1"/>')
+for i in range(4):
+    (x1, y1), (x2, y2) = corners[i], corners[(i + 1) % 4]
+    for s in range(1, 12):
+        t = s / 12
+        x, y = x1 + (x2 - x1) * t, y1 + (y2 - y1) * t
+        x, y = mxc + (x - mxc) * 1.04, myc + (y - myc) * 1.04
+        tw = f'<animate attributeName="opacity" values="1;.4;1" dur="{random.uniform(2, 4):.1f}s" repeatCount="indefinite"/>' if s % 3 == 0 else ""
+        out += f'<circle cx="{x:.1f}" cy="{y:.1f}" r="4" fill="#ffd479" opacity=".15"/><circle cx="{x:.1f}" cy="{y:.1f}" r="1.3" fill="#ffd479">{tw}</circle>'
+
+# buildings and trees
 for (gx, gy), (_, c) in sorted(grid.items(), key=lambda kv: kv[0][0] + kv[0][1]):
     cx, cy = ox + (gx - gy) * a, oy + (gx + gy) * b
     if not c:
@@ -124,6 +145,19 @@ for (gx, gy), (_, c) in sorted(grid.items(), key=lambda kv: kv[0][0] + kv[0][1])
             if random.random() < .3:
                 out += f'<rect x="{cx+A*u:.1f}" y="{cy-h+2*B-2*B*u+yy:.1f}" width="1.6" height="1.8" fill="#ffd479"/>'
 
+# moving cars: (lane offset, seconds per lap, color); k<0 outer lane clockwise, k>0 inner lane counter-clockwise
+fleet = [(-.014, 14, "#ffd479"), (-.014, 17, "#ff4d6d"), (-.014, 21, "#fff4e8"), (-.014, 25, "#6ec6ff"),
+         (.014, 15, "#ff9f43"), (.014, 19, "#c792ea")]
+for n, (k, dur, col) in enumerate(fleet):
+    pts = ring(k)
+    if k > 0: pts = [pts[0]] + pts[:0:-1]
+    out += (f'<g><animateMotion path="{path(pts)}" dur="{dur}s" begin="-{n*3.7:.1f}s" repeatCount="indefinite" rotate="auto"/>'
+            f'<polygon points="5,0 24,-6 24,6" fill="#ffd479" opacity=".16"/>'
+            f'<rect x="-5" y="-2.2" width="10" height="4.4" rx="1.6" fill="{col}"/>'
+            f'<rect x="-1" y="-1.6" width="3" height="3.2" fill="{BG}" opacity=".55"/>'
+            f'<circle cx="5" cy="-1.3" r=".9" fill="#fff"/><circle cx="5" cy="1.3" r=".9" fill="#fff"/></g>')
+
+# text + legend
 txt = lambda y, s: f'<text x="785" y="{y}" fill="#bba" {F} font-size="13" text-anchor="end">{s}</text>'
 out += (f'<text x="14" y="26" fill="#2ecc40" {F} font-size="14">$ render-city --blocks <tspan fill="#887"># last 365 days, downtown is latest</tspan></text>'
         + txt(70, f'<tspan fill="{G1}" font-weight="bold">{cal["totalContributions"]}</tspan> contributions')
