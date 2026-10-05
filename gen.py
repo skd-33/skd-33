@@ -79,27 +79,57 @@ w("stack", svg(800, 130, "".join(
 w("footer", svg(800, 50, f'<text x="10" y="30" fill="#2ecc40" {F} font-size="14">$ Connection closed.</text>'))
 
 # contribution city
+# contribution city
+import random, datetime
+random.seed(7)
 def mix(a, b, t):
     a, b = [tuple(int(x[i:i+2], 16) for i in (1, 3, 5)) for x in (a, b)]
     return "#%02x%02x%02x" % tuple(int(p + (q - p) * t) for p, q in zip(a, b))
 
-q = '{user(login:"%s"){contributionsCollection{contributionCalendar{totalContributions weeks{contributionDays{contributionCount weekday}}}}}}' % U
+q = '{user(login:"%s"){contributionsCollection{contributionCalendar{totalContributions weeks{contributionDays{contributionCount date}}}}}}' % U
 tok = os.environ.get("GH_PAT") or os.environ.get("GITHUB_TOKEN", "")
 req = ur.Request("https://api.github.com/graphql", json.dumps({"query": q}).encode(), {"Authorization": "Bearer " + tok})
 cal = json.load(ur.urlopen(req))["data"]["user"]["contributionsCollection"]["contributionCalendar"]
 
-tiles = [(i, d["weekday"], d["contributionCount"]) for i, wk in enumerate(cal["weeks"]) for d in wk["contributionDays"]]
-mx = max(c for _, _, c in tiles) or 1
-A, B, ox, oy = 9, 4.5, 70, 120
+N, a, b, ox, oy, A, B = 19, 10, 5, 400, 110, 7, 3.5
+days = [(d["date"], d["contributionCount"]) for wk in cal["weeks"] for d in wk["contributionDays"]][-N * N:][::-1]
+cells = sorted(((x, y) for x in range(N) for y in range(N)), key=lambda p: (p[0] - 9) ** 2 + (p[1] - 9) ** 2)
+grid = {c: (days[k] if k < len(days) else ("", 0)) for k, c in enumerate(cells)}
+mx = max(c for _, c in days) or 1
+best = max(days, key=lambda d: d[1])
+bd = datetime.datetime.strptime(best[0], "%Y-%m-%d").strftime("%b %d") if best[0] else "-"
+
 def poly(pts, fill):
     return '<polygon points="%s" fill="%s"/>' % (" ".join("%s,%s" % p for p in pts), fill)
-out = ""
-for i, j, c in sorted(tiles, key=lambda t: (t[0] + t[1], t[0])):
-    cx, cy = ox + (i - j) * 10, oy + (i + j) * 5
-    h = 2 + 80 * c / mx if c else 2
-    col = mix(LO, HI, c / mx) if c else "#2a2030"
+
+out = "".join(f'<circle cx="{random.randint(0,800)}" cy="{random.randint(0,200)}" r="{random.choice([.6,.9,1.2])}" fill="#fff4e8" opacity="{random.choice([.3,.5,.8])}"/>' for _ in range(70))
+out += f'<circle cx="90" cy="70" r="18" fill="#fff4e8"/><circle cx="99" cy="64" r="16" fill="{BG}"/>'
+out += poly([(ox, oy - b - 6), (ox + N * a + 12, oy + (N - 1) * b), (ox, oy + (2 * N - 1) * b + 6), (ox - N * a - 12, oy + (N - 1) * b)], "#241a2a")
+for (gx, gy), (_, c) in sorted(grid.items(), key=lambda kv: kv[0][0] + kv[0][1]):
+    cx, cy = ox + (gx - gy) * a, oy + (gx + gy) * b
+    if not c:
+        if random.random() < .5:
+            out += f'<circle cx="{cx}" cy="{cy-3}" r="3.2" fill="#2f9e5b"/><circle cx="{cx-1}" cy="{cy-4}" r="1.8" fill="#4fcf80"/>'
+        continue
+    h = 6 + 64 * (c / mx) ** 0.6
+    col = mix(LO, HI, (c / mx) ** 0.6)
     L, R, P = mix(col, "#000000", .35), mix(col, "#000000", .55), mix(col, "#ffffff", .15)
-    out += (poly([(cx - A, cy - h), (cx, cy - h + B * 2), (cx, cy + B * 2), (cx - A, cy)], L)
-          + poly([(cx + A, cy - h), (cx, cy - h + B * 2), (cx, cy + B * 2), (cx + A, cy)], R)
+    out += (poly([(cx - A, cy - h), (cx, cy - h + 2 * B), (cx, cy + 2 * B), (cx - A, cy)], L)
+          + poly([(cx + A, cy - h), (cx, cy - h + 2 * B), (cx, cy + 2 * B), (cx + A, cy)], R)
           + poly([(cx, cy - h - B), (cx + A, cy - h), (cx, cy - h + B), (cx - A, cy - h)], P))
-w("contribution-city", svg(660, 430, out + f'<text x="14" y="26" fill="{C}" {F} font-size="14">{cal["totalContributions"]} contributions in the last year</text>'))
+    for yy in range(5, int(h) - 2, 6):
+        for u in (.3, .7):
+            if random.random() < .4:
+                out += f'<rect x="{cx-A+A*u:.1f}" y="{cy-h+2*B*u+yy:.1f}" width="1.6" height="1.8" fill="#ffd479"/>'
+            if random.random() < .3:
+                out += f'<rect x="{cx+A*u:.1f}" y="{cy-h+2*B-2*B*u+yy:.1f}" width="1.6" height="1.8" fill="#ffd479"/>'
+
+txt = lambda y, s: f'<text x="785" y="{y}" fill="#bba" {F} font-size="13" text-anchor="end">{s}</text>'
+out += (f'<text x="14" y="26" fill="#2ecc40" {F} font-size="14">$ render-city --blocks <tspan fill="#887"># last 365 days, downtown is latest</tspan></text>'
+        + txt(70, f'<tspan fill="{G1}" font-weight="bold">{cal["totalContributions"]}</tspan> contributions')
+        + txt(92, f'<tspan fill="{G1}" font-weight="bold">{user["public_repos"]}</tspan> repos')
+        + txt(114, f'busiest day <tspan fill="#fff4e8" font-weight="bold">{bd} · {best[1]}</tspan>')
+        + f'<text x="14" y="362" fill="#887" {F} font-size="12">quiet</text>'
+        + "".join(f'<rect x="{55+i*16}" y="351" width="12" height="12" fill="{mix(LO, HI, i/4)}"/>' for i in range(5))
+        + f'<text x="142" y="362" fill="#887" {F} font-size="12">skyscraper</text>')
+w("contribution-city", svg(800, 380, out))
