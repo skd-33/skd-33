@@ -35,8 +35,8 @@ def section(name, n):
 # header
 t = "SOURABH KUMAR DUBEY"
 g = lambda dx, c: f'<text x="{30+dx}" y="90" fill="{c}" {F} font-size="40" font-weight="bold">{t}</text>'
-lines = ["CSE student · competitive programmer",
-         "C / C++ / Python · computer vision · networks",
+lines = ["CSE student · Competitive programmer",
+         "C / C++ / Python · Computer vision · Networks",
          f'building things at <tspan fill="{C}" font-weight="bold">skd-33</tspan>']
 w("header", svg(800, 245,
     f'<rect width="800" height="245" fill="none" stroke="{C}" stroke-width="2"/>'
