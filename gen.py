@@ -59,9 +59,9 @@ for k, (lab, v) in {"stars": ("TOTAL STARS", stars), "repos": ("REPOS", user["pu
 
 # projects: (file, title, line1, line2, stack)
 projects = [
-    ("buildfolio", "BuildFolio", "Portfolio builder for", "friends. Hacktoberfest entry.", "DEV Challenge"),
-    ("dpi", "Deep Packet Inspection", "Network traffic inspection", "system built in C++.", "C++ · Networks"),
-    ("vision", "Obstacle Detection", "Smartphone obstacle alerts", "for the visually impaired.", "YOLO · PyTorch"),
+    ("buildfolio", "BuildFolio", "Portfolio builder made", "as a gift for a friend.", "Web"),
+    ("dpi", "Deep Packet Inspection", "Network traffic inspection system", "in C++. Currently building it.", "C++ · Networks · In progress"),
+("vision", "Obstacle Detection", "College team project: obstacle alerts", "for the visually impaired. I was a part.", "YOLO · PyTorch · Team project"),
     ("chess", "Chess Square Game", "Guess the square from", "the board coordinates.", "Python"),
 ]
 for f, tt, a1, b1, s in projects:
