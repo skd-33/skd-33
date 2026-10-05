@@ -38,12 +38,15 @@ g = lambda dx, c: f'<text x="{30+dx}" y="90" fill="{c}" {F} font-size="40" font-
 lines = ["CSE student · competitive programmer",
          "C / C++ / Python · computer vision · networks",
          f'building things at <tspan fill="{C}" font-weight="bold">skd-33</tspan>']
-w("header", svg(800, 210,
-    f'<rect width="800" height="210" fill="none" stroke="{C}" stroke-width="2"/>'
+w("header", svg(800, 245,
+    f'<rect width="800" height="245" fill="none" stroke="{C}" stroke-width="2"/>'
     f'<text x="30" y="35" fill="#2ecc40" {F} font-size="14">$ whoami</text>'
     + g(-3, G1) + g(3, C) + g(0, "#fff4e8")
     + "".join(f'<text x="30" y="{130+i*25}" fill="#bba" {F} font-size="16"><tspan fill="{C}">&gt;&gt;</tspan> {l}</text>'
-              for i, l in enumerate(lines))))
+              for i, l in enumerate(lines))
+    + f'<text x="30" y="222" fill="#2ecc40" {F} font-size="16">$</text>'
+    + '<rect x="46" y="208" width="9" height="17" fill="#2ecc40">'
+      '<animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.5;0.5;1" dur="1s" repeatCount="indefinite"/></rect>'))
 
 for i, n in enumerate(["links", "stats", "city", "projects", "stack"], 1):
     w(f"sec-{n}", section(n, i))
