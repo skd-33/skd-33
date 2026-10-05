@@ -49,7 +49,7 @@ for i, n in enumerate(["links", "stats", "city", "projects", "stack"], 1):
     w(f"sec-{n}", section(n, i))
 
 # links
-for f, n, h in [("leetcode", "LeetCode", "skd-33"), ("codeforces", "Codeforces", "sourabhkumardubey200"), ("github", "GitHub", "skd-33"), ("x", "X", "skd_33")]:
+for f, n, h in [("leetcode", "LeetCode", "skd-33"), ("codeforces", "Codeforces", "sourabhkumardubey200"), ("github", "GitHub", "skd-33"), ("x", "X", "skd_33"), ("dev", "DEV", "ab_33")]:
     w(f"link-{f}", card(160, 80, [(n, 16, C, True), ("@" + h[:18], 11, "#998", False)]))
 
 # stats

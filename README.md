@@ -1,7 +1,7 @@
 <p align="center">
 <img src="./assets/header.svg" width="100%" align="top" alt="Sourabh Kumar Dubey">
 <img src="./assets/sec-links.svg" width="100%" align="top" alt="Links">
-<a href="https://leetcode.com/skd-33"><img src="./assets/link-leetcode.svg" width="20%" align="top" alt="LeetCode"></a><a href="https://codeforces.com/profile/sourabhkumardubey200"><img src="./assets/link-codeforces.svg" width="20%" align="top" alt="Codeforces"></a><a href="https://github.com/skd-33"><img src="./assets/link-github.svg" width="20%" align="top" alt="GitHub"></a><a href="https://x.com/skd_33"><img src="./assets/link-x.svg" width="20%" align="top" alt="X"></a>
+<a href="https://leetcode.com/skd-33"><img src="./assets/link-leetcode.svg" width="20%" align="top" alt="LeetCode"></a><a href="https://codeforces.com/profile/sourabhkumardubey200"><img src="./assets/link-codeforces.svg" width="20%" align="top" alt="Codeforces"></a><a href="https://github.com/skd-33"><img src="./assets/link-github.svg" width="20%" align="top" alt="GitHub"></a><a href="https://x.com/skd_33"><img src="./assets/link-x.svg" width="20%" align="top" alt="X"></a><a href="https://dev.to/ab_33"><img src="./assets/link-dev.svg" width="20%" align="top" alt="DEV"></a>
 <img src="./assets/sec-stats.svg" width="100%" align="top" alt="Stats">
 <img src="./assets/stat-stars.svg" width="25%" align="top" alt="Stars"><img src="./assets/stat-repos.svg" width="25%" align="top" alt="Repos"><img src="./assets/stat-followers.svg" width="25%" align="top" alt="Followers"><img src="./assets/stat-following.svg" width="25%" align="top" alt="Following">
 <img src="./assets/sec-city.svg" width="100%" align="top" alt="City">
